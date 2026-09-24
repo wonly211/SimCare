@@ -14,7 +14,7 @@
     "dev": "vite --config apps/web/vite.config.ts --host 127.0.0.1",
     "dev:worker": "wrangler dev --port 8787",
     "preview": "wrangler dev --port 8787",
-    "typecheck": "vue-tsc --noEmit -p apps/web/tsconfig.json && tsc --noEmit -p tsconfig.json",
+    "typecheck": "vue-tsc --noEmit -p apps/web/tsconfig.json && tsc --noEmit -p tsconfig.json && tsc --noEmit -p apps/web/tsconfig.sw.json",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -29,7 +29,8 @@
     "deploy:check": "node scripts/check-deploy.mjs",
     "deploy": "node scripts/deploy.mjs",
     "prepare": "node scripts/cloudflare-build.mjs",
-    "test:deploy": "node --test scripts/cloudflare-build.test.mjs"
+    "test:deploy": "node --test scripts/cloudflare-build.test.mjs",
+    "test:e2e:upgrade": "playwright test --config playwright.upgrade.config.ts"
   },
   "dependencies": {
     "dexie": "^4.0.11",

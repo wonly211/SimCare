@@ -2,16 +2,35 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+const buildInfo = {
+  version: JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'))
+    .version as string,
+  buildId: randomUUID(),
+};
 
 export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)),
+  define: { __SIMCARE_BUILD__: JSON.stringify(buildInfo) },
   plugins: [
+    {
+      name: 'simcare-version',
+      generateBundle() {
+        this.emitFile({
+          type: 'asset',
+          fileName: 'version.json',
+          source: JSON.stringify(buildInfo),
+        });
+      },
+    },
     vue(),
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src/service-worker',
       filename: 'sw.ts',
       registerType: 'prompt',
+      injectRegister: false,
       injectManifest: { globPatterns: ['**/*.{js,css,html,png,svg,woff2}'] },
       manifest: {
         name: '简护 | Simcare',

@@ -1,3 +1,4 @@
+import { protectedOperation } from '../update/safety';
 import { computed, reactive, ref } from 'vue';
 import type { ApiResponse } from '@simcare/shared';
 import { beijingDate } from '@simcare/shared';
@@ -36,20 +37,23 @@ export function errorMessage(error: unknown): string {
   return '操作未完成，请稍后重试';
 }
 export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
-  const response = await fetch(`/api/v1${path}`, {
-    method,
-    credentials: 'same-origin',
-    headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
-    body: body === undefined ? undefined : JSON.stringify(body),
+  return protectedOperation(async () => {
+    const response = await fetch(`/api/v1${path}`, {
+      method,
+      credentials: 'same-origin',
+      headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const contentType = response.headers.get('content-type') ?? '';
+    if (!contentType.includes('application/json'))
+      throw new Error('服务暂不可用，请检查网络后重试');
+    const envelope = (await response.json()) as ApiResponse<T>;
+    if (!envelope.success) {
+      throw new Error(envelope.error.message);
+    }
+    if (!response.ok) throw new Error(`请求失败（${response.status}）`);
+    return envelope.data;
   });
-  const contentType = response.headers.get('content-type') ?? '';
-  if (!contentType.includes('application/json')) throw new Error('服务暂不可用，请检查网络后重试');
-  const envelope = (await response.json()) as ApiResponse<T>;
-  if (!envelope.success) {
-    throw new Error(envelope.error.message);
-  }
-  if (!response.ok) throw new Error(`请求失败（${response.status}）`);
-  return envelope.data;
 }
 export function displayTime(value: string | null | undefined, dateOnly = false): string {
   if (!value) return '暂无记录';

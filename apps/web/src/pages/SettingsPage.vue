@@ -3,12 +3,19 @@ import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import type { Device, LoginRequest } from '@simcare/shared';
 import { state, syncNow, logoutLocal } from '../sync';
 import { api, displayTime, errorMessage, notify } from '../state/client';
+import UpdateNotice from '../components/UpdateNotice.vue';
+import { useUpdateGuard } from '../update/safety';
 import ModalDialog from '../components/ModalDialog.vue';
 const devices = ref<Device[]>([]),
   requests = ref<LoginRequest[]>([]),
   nickname = ref(state.session?.user.nickname ?? ''),
   busy = ref(false),
   removing = ref<Device | null>(null);
+const savedNickname = ref(nickname.value);
+useUpdateGuard(
+  () => nickname.value !== savedNickname.value,
+  () => busy.value,
+);
 const online = computed(() => state.online),
   admin = computed(() => state.session?.user.householdRole === 'admin');
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -27,8 +34,10 @@ async function refresh() {
   if (!disposed) timer = setTimeout(refresh, 10000);
 }
 async function rename() {
+  const value = nickname.value;
   try {
-    await api(`/members/${state.session!.user.id}`, 'PATCH', { nickname: nickname.value });
+    await api(`/members/${state.session!.user.id}`, 'PATCH', { nickname: value });
+    savedNickname.value = value;
     await syncNow();
     notify('昵称已更新');
   } catch (reason) {
@@ -72,12 +81,21 @@ onBeforeUnmount(() => {
 <template>
   <section class="page-section settings-page">
     <div class="section-heading"><h1>我的账户</h1></div>
+    <UpdateNotice settings />
     <section class="settings-section">
       <h2>个人资料</h2>
       <p>手机号：{{ state.session?.user.phone }}</p>
       <form class="inline-form" @submit.prevent="rename">
         <label>姓名或昵称<input v-model="nickname" required maxlength="80" /></label
-        ><button class="button secondary" :disabled="!online">保存</button>
+        ><button class="button secondary" :disabled="!online">保存</button
+        ><button
+          v-if="nickname !== savedNickname"
+          type="button"
+          class="button secondary"
+          @click="nickname = savedNickname"
+        >
+          取消修改
+        </button>
       </form>
     </section>
     <section v-if="admin" class="settings-section">

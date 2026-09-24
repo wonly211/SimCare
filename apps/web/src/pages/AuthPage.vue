@@ -4,6 +4,7 @@ import { LoaderCircle } from 'lucide-vue-next';
 import type { LoginTicket, Session } from '@simcare/shared';
 import TextSizeControl from '../components/TextSizeControl.vue';
 import { acceptSession } from '../sync';
+import { useUpdateGuard, updateSafety } from '../update/safety';
 import { api, errorMessage } from '../state/client';
 const initialized = ref<boolean | null>(null),
   configured = ref(true),
@@ -15,6 +16,15 @@ const adminLogin = ref(false),
   busy = ref(false),
   error = ref(''),
   ticket = ref<LoginTicket | null>(null);
+useUpdateGuard(
+  () =>
+    !!phone.value ||
+    !!nickname.value ||
+    !!initKey.value ||
+    deviceName.value !== '我的设备' ||
+    !!ticket.value,
+  () => busy.value,
+);
 const inviteToken = new URLSearchParams(location.search).get('invite') ?? undefined;
 const title = computed(() =>
   initialized.value === false
@@ -37,6 +47,10 @@ async function finish(session: Session) {
 }
 async function poll() {
   if (!ticket.value || disposed) return;
+  if (updateSafety.locked) {
+    timer = setTimeout(poll, 3000);
+    return;
+  }
   try {
     const result = await api<{ status: string; session?: Session }>(
       `/auth/requests/${ticket.value.id}/poll`,

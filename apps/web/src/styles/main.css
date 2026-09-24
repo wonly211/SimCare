@@ -2013,3 +2013,45 @@ a:focus-visible {
     flex-wrap: wrap;
   }
 }
+
+.update-notice {
+  margin: 1rem auto;
+  padding: 1rem;
+  max-width: 48rem;
+  border: 2px solid var(--primary, #087f72);
+  border-radius: 1rem;
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+.update-notice h2 {
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+}
+.update-notice p {
+  margin: 0.5rem 0;
+}
+.update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.update-actions button {
+  min-height: 48px;
+  white-space: normal;
+}
+.build-id {
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+.update-progress {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-content: center;
+  background: #ffffffee;
+  color: #153d38;
+  padding: 1rem;
+  font-size: 1.2rem;
+}

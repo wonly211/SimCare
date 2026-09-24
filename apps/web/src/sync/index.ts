@@ -1,4 +1,5 @@
-import { reactive } from 'vue';
+import { protectedOperation, updateSafety } from '../update/safety';
+import { reactive, watch } from 'vue';
 import {
   beijingNow,
   canCreateHealth,
@@ -555,9 +556,10 @@ export function createSyncClient(
     }
   }
   async function syncNow(): Promise<void> {
+    if (updateSafety.locked) return;
     if (running) return running;
     if (retryTimer) clearTimeout(retryTimer);
-    running = performSync();
+    running = protectedOperation(performSync);
     try {
       await running;
     } finally {
@@ -670,31 +672,39 @@ export function createSyncClient(
     dispose,
     state,
     database,
-    initialize,
-    acceptSession,
-    logoutLocal,
+    initialize: () => protectedOperation(initialize),
+    acceptSession: (session: Session, synchronize = true) =>
+      protectedOperation(() => acceptSession(session, synchronize)),
+    logoutLocal: () => protectedOperation(logoutLocal),
     syncNow,
-    resolveConflict,
+    resolveConflict: (id: string, choice: 'server' | 'local') =>
+      protectedOperation(() => resolveConflict(id, choice)),
     saveHealth: (input: HealthInput, id?: string, baseVersion?: number) =>
-      queue(
-        'health',
-        'upsert',
-        healthInputSchema.parse(input),
-        id,
-        baseVersion,
-      ) as Promise<HealthRecord>,
+      protectedOperation(
+        () =>
+          queue(
+            'health',
+            'upsert',
+            healthInputSchema.parse(input),
+            id,
+            baseVersion,
+          ) as Promise<HealthRecord>,
+      ),
     saveMedication: (input: MedicationInput, id?: string, baseVersion?: number) =>
-      queue(
-        'medication',
-        'upsert',
-        medicationInputSchema.parse(input),
-        id,
-        baseVersion,
-      ) as Promise<Medication>,
+      protectedOperation(
+        () =>
+          queue(
+            'medication',
+            'upsert',
+            medicationInputSchema.parse(input),
+            id,
+            baseVersion,
+          ) as Promise<Medication>,
+      ),
     deleteRecord: (resource: SyncOperation['resource'], id: string, baseVersion: number) =>
-      queue(resource, 'delete', undefined, id, baseVersion),
+      protectedOperation(() => queue(resource, 'delete', undefined, id, baseVersion)),
     restoreRecord: (resource: SyncOperation['resource'], id: string, baseVersion: number) =>
-      queue(resource, 'restore', undefined, id, baseVersion),
+      protectedOperation(() => queue(resource, 'restore', undefined, id, baseVersion)),
   };
 }
 
@@ -713,6 +723,12 @@ export const {
 } = sync;
 export const syncState = state;
 if (typeof window !== 'undefined') {
+  watch(
+    () => updateSafety.locked,
+    (locked, previous) => {
+      if (previous && !locked && state.session && state.online) void syncNow();
+    },
+  );
   window.addEventListener('online', () => {
     state.online = true;
     void syncNow();

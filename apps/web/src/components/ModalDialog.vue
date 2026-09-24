@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { inject, nextTick, onBeforeUnmount, onMounted, ref, useId } from 'vue';
 import { matchedRouteKey, onBeforeRouteLeave } from 'vue-router';
+import { useUpdateGuard } from '../update/safety';
 import { X } from 'lucide-vue-next';
 const props = defineProps<{
   title: string;
@@ -9,6 +10,10 @@ const props = defineProps<{
   dirty?: boolean;
   busy?: boolean;
 }>();
+useUpdateGuard(
+  () => !!props.dirty,
+  () => !!props.busy,
+);
 const emit = defineEmits<{ close: [] }>();
 const dialog = ref<HTMLDialogElement>();
 const heading = ref<HTMLElement>();

@@ -5,6 +5,7 @@ import { Copy, ShieldCheck, UserPlus, Users, X } from 'lucide-vue-next';
 import type { HouseholdRole, Invitation, Member, MemberGrant } from '@simcare/shared';
 import { state, syncNow } from '../sync';
 import { api, displayTime, errorMessage, notify } from '../state/client';
+import { useUpdateGuard } from '../update/safety';
 import ModalDialog from '../components/ModalDialog.vue';
 const admin = computed(() => state.session?.user.householdRole === 'admin');
 const systemAdmin = computed(() => state.session?.user.systemRole === 'system_admin');
@@ -16,6 +17,10 @@ const inviteOpen = ref(false);
 const invitationLink = ref('');
 const invitationQr = ref('');
 const pendingChange = ref<{ member: Member; patch: Partial<Member>; title: string }>();
+useUpdateGuard(
+  () => inviteOpen.value || !!pendingChange.value,
+  () => busy.value,
+);
 const grant = (id: string) =>
   state.snapshot?.grants.find(
     (item) => item.ownerId === state.session?.user.id && item.granteeId === id,

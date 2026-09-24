@@ -23,6 +23,7 @@ import {
 } from '@simcare/shared';
 import { state, logoutLocal, syncNow } from '../sync';
 import { api, displayTime, downloadFile, errorMessage, notify } from '../state/client';
+import { useUpdateGuard } from '../update/safety';
 import ModalDialog from '../components/ModalDialog.vue';
 interface Preview {
   previewId: string;
@@ -50,6 +51,21 @@ const preview = ref<Preview>();
 const confirming = ref(false);
 const busy = ref(false);
 const error = ref('');
+const fileInput = ref<HTMLInputElement>();
+useUpdateGuard(
+  () => !!password.value || !!importPassword.value || !!restoreFile.value || !!preview.value,
+  () => busy.value,
+);
+function cancelPreparation() {
+  if (busy.value) return;
+  password.value = '';
+  importPassword.value = '';
+  restoreFile.value = undefined;
+  preview.value = undefined;
+  confirming.value = false;
+  error.value = '';
+  if (fileInput.value) fileInput.value.value = '';
+}
 const onlineReady = computed(() => state.online && state.pendingCount === 0);
 async function exportRecords(format: 'json' | 'csv') {
   busy.value = true;
@@ -217,6 +233,14 @@ async function restore() {
       {{ !state.online ? '请联网后导出或恢复数据。' : '仍有待同步记录，请完成同步后再进行备份。' }}
     </div>
     <p v-if="error" class="form-error" role="alert">{{ error }}</p>
+    <button
+      v-if="password || importPassword || restoreFile || preview"
+      class="button secondary"
+      :disabled="busy"
+      @click="cancelPreparation"
+    >
+      取消备份准备与恢复选择
+    </button>
     <section class="settings-section">
       <div class="section-heading compact">
         <h2>记录导出</h2>
@@ -277,7 +301,12 @@ async function restore() {
             ><FolderOpen :size="23" /><span>{{
               restoreFile?.name ?? '选择 .simcare 备份文件'
             }}</span
-            ><input type="file" accept=".simcare,.json" required @change="chooseFile"
+            ><input
+              ref="fileInput"
+              type="file"
+              accept=".simcare,.json"
+              required
+              @change="chooseFile"
           /></label>
           <div class="form-grid">
             <label
