@@ -23,6 +23,7 @@ import AuthPage from './pages/AuthPage.vue';
 import ModalDialog from './components/ModalDialog.vue';
 import UpdateNotice from './components/UpdateNotice.vue';
 import { updateSafety } from './update/safety';
+import { currentBuild } from './update/build';
 import TextSizeControl from './components/TextSizeControl.vue';
 import RecordDetails from './components/RecordDetails.vue';
 import { savedMessage } from './state/client';
@@ -268,7 +269,8 @@ onMounted(async () => {
             </button>
           </div>
           <footer class="app-footer">
-            <span>简护 | Simcare</span><span>家庭健康记录 · 北京时间 GMT+8</span>
+            <span>简护 | Simcare v{{ currentBuild.version }}</span
+            ><span>家庭健康记录 · 北京时间 GMT+8</span>
           </footer>
         </main>
       </div>
