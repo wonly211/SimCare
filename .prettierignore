@@ -1,0 +1,9 @@
+package-lock.json
+dist
+node_modules
+.wrangler
+.artifacts
+test-results
+playwright-report
+
+.tmp
