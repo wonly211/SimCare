@@ -2,7 +2,6 @@
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { RouterView, useRoute, useRouter } from 'vue-router';
 import {
-  Activity,
   AlertCircle,
   ArrowRight,
   Check,
@@ -122,7 +121,8 @@ onMounted(async () => {
 
 <template>
   <div v-if="loading" class="app-loading">
-    <span class="brand-mark"><Activity :size="25" /></span><strong>简护 | Simcare</strong
+    <img class="brand-logo" src="/logo.png" alt="" width="48" height="48" /><strong
+      >简护 | Simcare</strong
     ><LoaderCircle class="spin" :size="22" />
   </div>
   <AuthPage v-else-if="!state.session" />

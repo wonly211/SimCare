@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
-import { Activity, LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle } from 'lucide-vue-next';
 import type { LoginTicket, Session } from '@simcare/shared';
 import TextSizeControl from '../components/TextSizeControl.vue';
 import { acceptSession } from '../sync';
@@ -111,7 +111,11 @@ onBeforeUnmount(() => {
 <template>
   <main class="auth-shell">
     <section class="auth-card">
-      <div class="auth-brand"><Activity :size="30" /><strong>简护 | Simcare</strong></div>
+      <div class="auth-brand">
+        <img class="brand-logo" src="/logo.png" alt="" width="48" height="48" /><strong
+          >简护 | Simcare</strong
+        >
+      </div>
       <p class="eyebrow">家庭健康记录</p>
       <TextSizeControl />
       <h1>{{ title }}</h1>
