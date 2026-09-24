@@ -2,6 +2,7 @@
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { Activity, LoaderCircle } from 'lucide-vue-next';
 import type { LoginTicket, Session } from '@simcare/shared';
+import TextSizeControl from '../components/TextSizeControl.vue';
 import { acceptSession } from '../sync';
 import { api, errorMessage } from '../state/client';
 const initialized = ref<boolean | null>(null),
@@ -112,6 +113,7 @@ onBeforeUnmount(() => {
     <section class="auth-card">
       <div class="auth-brand"><Activity :size="30" /><strong>简护 | Simcare</strong></div>
       <p class="eyebrow">家庭健康记录</p>
+      <TextSizeControl />
       <h1>{{ title }}</h1>
       <p v-if="!configured" class="error-message" role="alert">
         请先在 Cloudflare Worker 设置中添加普通变量 init_key 并保存。
@@ -119,7 +121,7 @@ onBeforeUnmount(() => {
       <p v-if="error" class="error-message" role="alert">{{ error }}</p>
       <div v-if="ticket" class="form-stack">
         <h2>等待管理员批准</h2>
-        <p>请让管理员打开“我的账户 → 登录申请”，确认手机号 {{ phone }} 和设备名称。</p>
+        <p>请让管理员打开“我的 → 登录申请”，确认手机号 {{ phone }} 和设备名称。</p>
         <p>申请 10 分钟有效，请保持此页面打开。</p>
         <button class="button secondary" @click="cancel">返回</button>
       </div>
@@ -170,7 +172,7 @@ onBeforeUnmount(() => {
         >
           {{ adminLogin ? '返回成员登录' : '系统管理员登录' }}
         </button>
-        <p class="muted">手机号是家庭内部账号，不发送短信。设备批准后保持登录。</p>
+        <p class="muted">不收短信，需要家人批准一次。批准后，这台设备会保持登录。</p>
       </form>
     </section>
   </main>
@@ -180,12 +182,12 @@ onBeforeUnmount(() => {
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 16px;
   background: #f4f7f8;
 }
 .auth-card {
   width: min(100%, 440px);
-  padding: 32px;
+  padding: clamp(16px, 4vw, 32px);
   background: white;
   border-radius: 24px;
   box-shadow: 0 12px 48px #164e3610;
@@ -195,7 +197,7 @@ onBeforeUnmount(() => {
   gap: 12px;
   align-items: center;
   color: #087f72;
-  font-size: 24px;
+  font-size: 1.2rem;
 }
 .error-message {
   color: #ac2525;

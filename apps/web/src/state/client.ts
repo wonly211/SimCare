@@ -1,4 +1,4 @@
-import { computed, reactive } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import type { ApiResponse } from '@simcare/shared';
 import { beijingDate } from '@simcare/shared';
 
@@ -16,6 +16,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
+export const savedMessage = ref('');
 export const notice = reactive({ message: '', kind: 'success' as 'success' | 'error' });
 let noticeTimer: ReturnType<typeof setTimeout>;
 export function notify(message: string, kind: 'success' | 'error' = 'success') {
@@ -54,6 +55,7 @@ export function displayTime(value: string | null | undefined, dateOnly = false):
   if (!value) return '暂无记录';
   return new Intl.DateTimeFormat('zh-CN', {
     timeZone: 'Asia/Shanghai',
+    year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     ...(dateOnly ? {} : { hour: '2-digit', minute: '2-digit', hour12: false }),

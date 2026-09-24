@@ -1,17 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { Activity, CalendarDays, ChartNoAxesCombined, List, Plus } from 'lucide-vue-next';
 import {
-  Activity,
-  CalendarDays,
-  ChartNoAxesCombined,
-  History,
-  List,
-  Pencil,
-  Plus,
-  RotateCcw,
-  Trash2,
-} from 'lucide-vue-next';
-import {
+  beijingDate,
   canCreateHealth,
   canEditOwned,
   canViewHealth,
@@ -23,13 +14,19 @@ import { state, deleteRecord, restoreRecord } from '../sync';
 import HealthForm from '../components/HealthForm.vue';
 import TrendChart from '../components/TrendChart.vue';
 import ModalDialog from '../components/ModalDialog.vue';
+import RecordDetails from '../components/RecordDetails.vue';
 import { api, displayTime, errorMessage, notify } from '../state/client';
 
 const props = defineProps<{ ownerId: string }>();
 const tab = ref<'records' | 'trend'>('records');
 const deleted = ref(false);
-const fromDate = ref('');
-const toDate = ref('');
+const detail = ref<HealthRecord>();
+function setRange(days: number) {
+  toDate.value = beijingDate();
+  fromDate.value = beijingDate(new Date(Date.now() - (days - 1) * 86400000));
+}
+const fromDate = ref(beijingDate(new Date(Date.now() - 6 * 86400000)));
+const toDate = ref(beijingDate());
 const metric = ref<'pressure' | 'pulse' | 'oxygen' | 'temperature'>('pressure');
 const editing = ref<HealthRecord>();
 const formOpen = ref(false);
@@ -115,6 +112,17 @@ async function confirmAction() {
       <p>该成员尚未授权你查看健康记录。</p>
     </div>
     <template v-else>
+      <div class="segmented" aria-label="记录日期范围">
+        <button @click="setRange(7)">最近7天</button><button @click="setRange(30)">最近30天</button
+        ><button
+          @click="
+            fromDate = '';
+            toDate = '';
+          "
+        >
+          全部日期
+        </button>
+      </div>
       <div class="toolbar">
         <div class="segmented">
           <button :class="{ active: tab === 'records' }" @click="tab = 'records'">
@@ -160,7 +168,7 @@ async function confirmAction() {
       <div v-else class="record-list">
         <article v-for="record in records" :key="record.id" class="record-row">
           <div class="record-date">
-            <strong>{{ record.measuredAt.slice(5, 10).replace('-', ' / ') }}</strong
+            <strong>{{ record.measuredAt.slice(0, 10) }}</strong
             ><span>{{ record.measuredAt.slice(11, 16) }}</span>
           </div>
           <div class="record-values">
@@ -172,7 +180,7 @@ async function confirmAction() {
             </div>
             <div v-if="record.pulse !== null" class="record-reading">
               <strong>{{ record.pulse }}</strong
-              ><span>心率 bpm</span>
+              ><span>心率 次/分</span>
             </div>
             <div v-if="record.oxygen !== null" class="record-reading">
               <strong>{{ record.oxygen }}</strong
@@ -188,46 +196,45 @@ async function confirmAction() {
             ><span>{{ ownerName(record.recordedBy) }} 录入</span>
             <p v-if="record.note">{{ record.note }}</p>
           </div>
-          <div class="row-actions">
-            <button
-              class="icon-button"
-              :disabled="!state.online"
-              title="记录历史"
-              aria-label="记录历史"
-              @click="historyFor(record)"
-            >
-              <History :size="17" /></button
-            ><template v-if="state.session && canEditOwned(state.session.user, record.ownerId)"
-              ><button
-                v-if="!deleted"
-                class="icon-button"
-                title="编辑记录"
-                aria-label="编辑记录"
-                @click="openForm(record)"
-              >
-                <Pencil :size="17" /></button
-              ><button
-                v-if="!deleted"
-                class="icon-button danger"
-                title="删除记录"
-                aria-label="删除记录"
-                @click="pendingAction = { record, restore: false }"
-              >
-                <Trash2 :size="17" /></button
-              ><button
-                v-else
-                class="icon-button"
-                title="恢复记录"
-                aria-label="恢复记录"
-                @click="pendingAction = { record, restore: true }"
-              >
-                <RotateCcw :size="17" /></button
-            ></template>
-          </div>
+          <button class="button secondary" @click="detail = record">查看记录详情</button>
         </article>
       </div>
       <p class="page-footnote">{{ records.length }} 条记录 · 北京时间 GMT+8</p>
     </template>
+    <ModalDialog v-if="detail" title="测量记录详情" @close="detail = undefined"
+      ><RecordDetails :record="detail" />
+      <div class="modal-actions">
+        <button
+          class="button secondary"
+          :disabled="!state.online"
+          @click="
+            historyFor(detail);
+            detail = undefined;
+          "
+        >
+          记录历史</button
+        ><template v-if="state.session && canEditOwned(state.session.user, detail.ownerId)"
+          ><button
+            v-if="!detail.deletedAt"
+            class="button secondary"
+            @click="
+              openForm(detail);
+              detail = undefined;
+            "
+          >
+            编辑记录</button
+          ><button
+            class="button danger-button"
+            @click="
+              pendingAction = { record: detail, restore: !!detail.deletedAt };
+              detail = undefined;
+            "
+          >
+            {{ detail.deletedAt ? '恢复记录' : '删除记录' }}
+          </button></template
+        >
+      </div></ModalDialog
+    >
     <HealthForm
       v-if="formOpen"
       :record="editing"

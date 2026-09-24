@@ -32,7 +32,14 @@ test('手机号初始化与审批、权限、健康与用药、离线同步、�
   context,
   browser,
 }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-text-size', 'large');
+  await page.getByRole('button', { name: '特大', exact: true }).click();
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-text-size', 'extra');
+  await page.getByRole('button', { name: '大字', exact: true }).click();
   await page.getByLabel('手机号', { exact: true }).fill('13800000000');
   await page.getByLabel('姓名或昵称').fill('测试管理员');
   await page.getByLabel('初始化密钥').fill('e2e-only-not-a-production-secret');
@@ -136,9 +143,10 @@ test('手机号初始化与审批、权限、健康与用药、离线同步、�
   await page.reload();
   await page.waitForFunction(() => !!navigator.serviceWorker.controller);
   await context.setOffline(true);
-  await page.getByRole('button', { name: '新增健康记录', exact: true }).first().click();
+  await page.getByRole('button', { name: /为.*记录测量/ }).click();
   await page.getByLabel('收缩压').fill('121');
   await page.getByLabel('舒张压').fill('81');
+  await page.getByRole('button', { name: '展开血氧、体温与补充说明' }).click();
   await page.getByLabel('备注', { exact: true }).fill('离线持久化测试');
   await page.getByRole('button', { name: '保存记录', exact: true }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -226,7 +234,8 @@ test('手机号初始化与审批、权限、健康与用药、离线同步、�
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '表单测试药品' })).toBeVisible();
   await page.screenshot({ path: '.artifacts/mobile-medication.png', fullPage: true });
-  await mobileNavigation.getByRole('button', { name: '家庭', exact: true }).click();
+  await mobileNavigation.getByRole('button', { name: '我的', exact: true }).click();
+  await page.getByRole('button', { name: '家庭成员', exact: true }).click();
   await expect(page.getByRole('heading', { name: '家庭成员', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
@@ -257,5 +266,111 @@ test('手机号初始化与审批、权限、健康与用药、离线同步、�
   await pcPage.getByRole('button', { name: '确认移除', exact: true }).click();
   await expect(pcPage.getByRole('heading', { name: '手机号登录' })).toBeVisible();
   await pcContext.close();
+  await page.goto('/#/settings');
+  await page.getByRole('button', { name: '特大', exact: true }).click();
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-text-size', 'extra');
+  await page.goto('/#/health');
+  await page.getByRole('button', { name: '新增记录', exact: true }).click();
+  await page.getByLabel('高压（收缩压） · mmHg', { exact: true }).fill('123');
+  page.once('dialog', (dialog) => dialog.dismiss());
+  await page.getByRole('button', { name: '关闭', exact: true }).click();
+  await expect(page.getByLabel('高压（收缩压） · mmHg', { exact: true })).toHaveValue('123');
+  await page.getByRole('button', { name: '保存记录', exact: true }).click();
+  await expect(page.locator('#health-diastolic')).toBeFocused();
+  await expect(page.locator('#health-diastolic')).toHaveAttribute('aria-invalid', 'true');
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: '关闭', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.goto('/#/overview');
+  await page.getByRole('button', { name: '切换家庭成员', exact: true }).click();
+  await page.getByRole('dialog').getByRole('button', { name: '测试成员', exact: true }).click();
+  await page.getByRole('button', { name: '为测试成员记录测量', exact: true }).click();
+  await expect(page.getByRole('dialog').getByText('测试成员', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '展开血氧、体温与补充说明' }).click();
+  await page.getByLabel('体温 · ℃', { exact: true }).fill('36.6');
+  await page.getByRole('button', { name: '收起血氧、体温与补充说明' }).click();
+  await page.getByRole('button', { name: '展开血氧、体温与补充说明' }).click();
+  await expect(page.getByLabel('体温 · ℃', { exact: true })).toHaveValue('36.6');
+  expect(await page.getByRole('dialog').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
+    true,
+  );
+  await page.getByRole('button', { name: '保存记录', exact: true }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect
+    .poll(async () =>
+      (await api<SyncSnapshot>(page, '/sync/pull')).healthRecords.some(
+        (r) => r.ownerId === member.user.id && r.temperature === 36.6,
+      ),
+    )
+    .toBe(true);
+  await page.getByRole('button', { name: '切换家庭成员', exact: true }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: '测试管理员（我）', exact: true })
+    .click();
+  await page.goto('/#/health');
+  await expect(page.locator('main')).toBeFocused();
+  await page.getByRole('button', { name: '趋势', exact: true }).click();
+  await page.getByText('查看同范围测量数据', { exact: true }).click();
+  await expect(page.locator('.trend-data')).toContainText('mmHg');
+  await expect(page.locator('.trend-data li').first()).toBeVisible();
+  await page.goto('/#/medication');
+  await page
+    .locator('.dose-row')
+    .filter({ has: page.getByRole('heading', { name: '测试药品', exact: true }) })
+    .first()
+    .getByRole('button', { name: '查看用药详情', exact: true })
+    .click();
+  await expect(page.getByRole('dialog')).toContainText('每次 0.5 片');
+  await page.getByRole('button', { name: '修改计划', exact: true }).click();
+  await expect(page.getByRole('dialog').locator('.record-owner')).toHaveText(
+    '记录归属：测试管理员',
+  );
+  await expect(
+    page.getByRole('dialog').getByRole('combobox', { name: '家庭成员', exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: '关闭', exact: true }).click();
+  for (const width of [320, 390, 1365]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const size of ['标准', '大字', '特大']) {
+      await page.goto('/#/settings');
+      await page.getByRole('button', { name: size, exact: true }).click();
+      for (const route of ['overview', 'health', 'medication', 'family', 'settings', 'backup']) {
+        await page.goto('/#/' + route);
+        await expect
+          .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), {
+            message: width + ' ' + size + ' ' + route,
+          })
+          .toBe(true);
+      }
+    }
+  }
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto('/#/settings');
+  await page.getByRole('button', { name: '大字', exact: true }).click();
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = '250%';
+  });
+  for (const route of ['overview', 'health', 'medication', 'family', 'settings', 'backup']) {
+    await page.goto('/#/' + route);
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), {
+        message: '200% text ' + route,
+      })
+      .toBe(true);
+  }
+  await page.goto('/#/health');
+  await page.getByRole('button', { name: '新增记录', exact: true }).click();
+  expect(await page.getByRole('dialog').evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
+    true,
+  );
+  await page.getByRole('button', { name: '关闭', exact: true }).click();
+  await page.goto('/#/settings');
+  await page.getByRole('button', { name: '大字', exact: true }).click();
+  await page.goto('/#/overview');
+  await page.screenshot({ path: '.artifacts/elder-home.png', fullPage: true });
+  expect(pageErrors).toEqual([]);
+
   await memberContext.close();
 });

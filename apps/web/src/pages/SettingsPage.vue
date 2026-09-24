@@ -82,7 +82,9 @@ onBeforeUnmount(() => {
     </section>
     <section v-if="admin" class="settings-section">
       <div class="section-heading compact">
-        <h2>登录申请</h2>
+        <h2>
+          登录申请<span v-if="requests.length"> · {{ requests.length }} 项待批准</span>
+        </h2>
         <button class="button secondary" :disabled="!online" @click="load">刷新</button>
       </div>
       <p class="muted">请核对家人的手机号与设备名称，再批准登录。申请 10 分钟有效。</p>

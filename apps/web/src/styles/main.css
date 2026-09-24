@@ -8,7 +8,7 @@
   letter-spacing: 0;
   --green: #19766b;
   --line: #e1e7e4;
-  --muted: #718079;
+  --muted: #526960;
 }
 * {
   box-sizing: border-box;
@@ -57,16 +57,16 @@ p {
   overflow-wrap: anywhere;
 }
 h1 {
-  font-size: 26px;
+  font-size: 1.4rem;
   font-weight: 650;
   line-height: 1.35;
 }
 h2 {
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 h3 {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
 }
 a {
@@ -103,7 +103,7 @@ label {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  font-size: 14px;
+  font-size: 1rem;
   color: #50635b;
   min-width: 0;
 }
@@ -132,7 +132,7 @@ legend {
 .button {
   padding: 11px 17px;
   min-height: 42px;
-  font-size: 14px;
+  font-size: 1rem;
 }
 .primary {
   background: var(--green);
@@ -157,7 +157,7 @@ legend {
   padding: 7px 3px;
   background: transparent;
   color: var(--green);
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 .icon-button {
   background: transparent;
@@ -177,7 +177,7 @@ legend {
 .section-subtitle,
 .page-footnote {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 .section-subtitle {
   margin-top: 8px;
@@ -186,8 +186,8 @@ legend {
   margin-top: 18px;
 }
 .eyebrow {
-  font-size: 11px;
-  color: #84918a;
+  font-size: 0.9rem;
+  color: #526960;
   margin-bottom: 7px;
 }
 .sr-only {
@@ -228,16 +228,16 @@ legend {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 23px;
+  font-size: 1.4rem;
   color: #28483b;
   font-weight: 650;
 }
 .brand small,
 .brand-subtitle {
   display: block;
-  font-size: 11px;
+  font-size: 0.9rem;
   font-weight: 400;
-  color: #7c8b82;
+  color: #526960;
 }
 .sidebar {
   position: fixed;
@@ -259,11 +259,11 @@ legend {
   gap: 4px;
 }
 .sidebar-household strong {
-  font-size: 15px;
+  font-size: 1rem;
 }
 .sidebar-household > span:last-child {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .desktop-navigation {
   display: flex;
@@ -279,9 +279,9 @@ legend {
   background: transparent;
   padding: 13px 14px;
   border-radius: 6px;
-  color: #6a7b72;
+  color: #526960;
   text-align: left;
-  font-size: 14px;
+  font-size: 1rem;
 }
 .desktop-navigation button.active,
 .sidebar-backup.active {
@@ -318,13 +318,13 @@ legend {
 .sidebar-user strong,
 .sidebar-user span:not(.avatar) {
   display: block;
-  font-size: 12px;
+  font-size: 0.9rem;
   overflow-wrap: anywhere;
 }
 .sidebar-user div span {
   color: var(--muted);
   margin-top: 3px;
-  font-size: 10px !important;
+  font-size: 0.9rem !important;
 }
 .avatar {
   background: #e9f2ed;
@@ -335,18 +335,18 @@ legend {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 1rem;
   flex-shrink: 0;
 }
 .avatar.small {
   width: 28px;
   height: 28px;
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .avatar.large {
   width: 46px;
   height: 46px;
-  font-size: 18px;
+  font-size: 1.2rem;
 }
 .main-layout {
   margin-left: 226px;
@@ -363,8 +363,8 @@ legend {
   gap: 16px;
 }
 .topbar-location {
-  color: #7b8981;
-  font-size: 13px;
+  color: #526960;
+  font-size: 0.9rem;
 }
 .topbar-right {
   display: flex;
@@ -372,8 +372,8 @@ legend {
   gap: 25px;
 }
 .topbar-date {
-  color: #75867c;
-  font-size: 12px;
+  color: #526960;
+  font-size: 0.9rem;
 }
 .sync-status {
   display: inline-flex;
@@ -384,7 +384,7 @@ legend {
   border: 0;
   border-radius: 5px;
   padding: 7px 10px;
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .sync-status.offline,
 .warning {
@@ -407,12 +407,12 @@ legend {
   border: 0;
   padding: 4px;
   background: transparent;
-  font-size: 13px;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 .member-switch-label {
-  font-size: 11px;
-  color: #8a9690;
+  font-size: 0.9rem;
+  color: #526960;
   margin-left: 5px;
 }
 .section-heading {
@@ -457,20 +457,20 @@ legend {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #79958a;
-  font-size: 13px;
+  color: #526960;
+  font-size: 0.9rem;
 }
 .rose .metric-heading {
-  color: #b8758a;
+  color: #526960;
 }
 .blue .metric-heading {
-  color: #7198c0;
+  color: #526960;
 }
 .gold .metric-heading {
-  color: #b39958;
+  color: #526960;
 }
 .metric-value {
-  font-size: 30px;
+  font-size: 1.8rem;
   line-height: 1.25;
   font-weight: 600;
   margin: 20px 0 15px;
@@ -478,8 +478,8 @@ legend {
   font-variant-numeric: tabular-nums;
 }
 .metric-divider {
-  font-size: 24px;
-  color: #adb9b1;
+  font-size: 1.4rem;
+  color: #526960;
   font-weight: 400;
   margin: 0 7px;
 }
@@ -488,8 +488,8 @@ legend {
   gap: 6px;
   flex-wrap: wrap;
   justify-content: space-between;
-  font-size: 10px;
-  color: #91a098;
+  font-size: 0.9rem;
+  color: #526960;
 }
 .overview-columns {
   display: grid;
@@ -523,8 +523,8 @@ legend {
   justify-content: center;
   align-items: center;
   pointer-events: none;
-  color: #98a49d;
-  font-size: 13px;
+  color: #526960;
+  font-size: 0.9rem;
 }
 .mini-dose {
   display: flex;
@@ -534,8 +534,8 @@ legend {
   border-bottom: 1px solid var(--line);
 }
 .mini-dose-time {
-  font-size: 12px;
-  color: #7f927e;
+  font-size: 0.9rem;
+  color: #526960;
   width: 34px;
   flex-shrink: 0;
 }
@@ -548,11 +548,11 @@ legend {
   overflow-wrap: anywhere;
 }
 .mini-dose strong {
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: 500;
 }
 .mini-dose div span {
-  font-size: 12px;
+  font-size: 0.9rem;
   color: var(--muted);
   margin-top: 4px;
 }
@@ -562,7 +562,7 @@ legend {
   gap: 20px;
   padding: 20px 0;
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 0.9rem;
   flex-wrap: wrap;
 }
 .recent-row time {
@@ -573,11 +573,11 @@ legend {
   font-weight: 550;
 }
 .recent-row small {
-  color: #8d9a93;
-  font-size: 10px;
+  color: #526960;
+  font-size: 0.9rem;
 }
 .recent-row p {
-  color: #8b978f;
+  color: #526960;
   margin-left: auto;
 }
 .empty-state {
@@ -587,13 +587,13 @@ legend {
   text-align: center;
   padding: 60px 20px;
   gap: 16px;
-  color: #82918a;
+  color: #526960;
 }
 .empty-state h3 {
   color: #61786a;
 }
 .empty-state p {
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 .small-empty {
   min-height: 130px;
@@ -601,8 +601,8 @@ legend {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #96a299;
-  font-size: 13px;
+  color: #526960;
+  font-size: 0.9rem;
   gap: 12px;
 }
 .small-empty.horizontal {
@@ -614,8 +614,8 @@ legend {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  font-size: 10px;
-  color: #9ca8a1;
+  font-size: 0.9rem;
+  color: #526960;
   padding-top: 35px;
   margin-top: 30px;
 }
@@ -649,8 +649,8 @@ legend {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: #7d8b83;
-  font-size: 13px;
+  color: #526960;
+  font-size: 0.9rem;
 }
 .segmented button.active {
   background: white;
@@ -668,7 +668,7 @@ legend {
 .date-filter input,
 .filters input {
   width: 145px;
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .day-picker input {
   width: 150px;
@@ -690,10 +690,10 @@ legend {
   display: block;
 }
 .record-date strong {
-  font-size: 14px;
+  font-size: 1rem;
 }
 .record-date span {
-  font-size: 12px;
+  font-size: 0.9rem;
   color: var(--muted);
   margin-top: 5px;
 }
@@ -709,22 +709,22 @@ legend {
   gap: 4px;
 }
 .record-reading strong {
-  font-size: 21px;
+  font-size: 1.4rem;
   font-weight: 550;
 }
 .record-reading > span {
-  font-size: 10px;
-  color: #8a9990;
+  font-size: 0.9rem;
+  color: #526960;
 }
 .reading-slash {
   margin: 0 5px;
-  color: #b1bcb5;
+  color: #526960;
 }
 .record-meta {
   margin-left: auto;
   max-width: 240px;
-  color: #8b9a90;
-  font-size: 11px;
+  color: #526960;
+  font-size: 0.9rem;
 }
 .record-meta span {
   display: block;
@@ -749,17 +749,17 @@ legend {
   border-bottom: 1px solid var(--line);
 }
 .plan-summary > svg {
-  color: #839d78;
+  color: #526960;
 }
 .plan-summary strong,
 .plan-summary div span {
   display: block;
 }
 .plan-summary strong {
-  font-size: 14px;
+  font-size: 1rem;
 }
 .plan-summary div span {
-  font-size: 12px;
+  font-size: 0.9rem;
   color: var(--muted);
   margin-top: 3px;
 }
@@ -767,7 +767,7 @@ legend {
   margin-left: auto;
 }
 .badge {
-  font-size: 10px;
+  font-size: 0.9rem;
   padding: 3px 7px;
   border-radius: 4px;
   font-weight: 400;
@@ -777,11 +777,11 @@ legend {
 }
 .badge.neutral {
   background: #edf0ef;
-  color: #7a8b80;
+  color: #526960;
 }
 .badge.warning {
   background: #faf0dc;
-  color: #a58133;
+  color: #526960;
 }
 .time-group {
   padding-top: 28px;
@@ -790,11 +790,11 @@ legend {
   display: flex;
   align-items: center;
   gap: 9px;
-  color: #9e956f;
+  color: #526960;
   margin-bottom: 12px;
 }
 .time-group-label h2 {
-  font-size: 14px;
+  font-size: 1rem;
 }
 .dose-row {
   display: flex;
@@ -811,7 +811,7 @@ legend {
 }
 .dose-time span {
   display: block;
-  font-size: 11px;
+  font-size: 0.9rem;
   font-weight: 400;
   color: var(--muted);
   margin-top: 4px;
@@ -823,7 +823,7 @@ legend {
 .dose-info p,
 .medicine-content p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.9rem;
   margin-top: 6px;
 }
 .dose-note {
@@ -835,12 +835,12 @@ legend {
   align-items: baseline;
 }
 .dose-amount strong {
-  font-size: 22px;
+  font-size: 1.4rem;
   font-weight: 550;
 }
 .dose-amount span {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .medicine-row {
   display: flex;
@@ -857,7 +857,7 @@ legend {
   align-items: center;
   border-radius: 6px;
   background: #f1f0e6;
-  color: #a49b69;
+  color: #526960;
   flex-shrink: 0;
 }
 .medicine-content {
@@ -876,8 +876,8 @@ legend {
   flex-wrap: wrap;
   gap: 7px;
   margin-top: 12px;
-  font-size: 11px;
-  color: #708377;
+  font-size: 0.9rem;
+  color: #526960;
 }
 .schedule-tags span {
   padding-right: 10px;
@@ -899,7 +899,7 @@ legend {
   display: flex;
   gap: 4px;
   align-items: center;
-  font-size: 11px;
+  font-size: 0.9rem;
   color: var(--muted);
   margin-top: 7px;
 }
@@ -907,15 +907,15 @@ legend {
   min-width: 140px;
 }
 .member-permission label {
-  font-size: 10px;
+  font-size: 0.9rem;
 }
 .member-permission select {
-  font-size: 12px;
+  font-size: 0.9rem;
   padding: 7px 10px;
 }
 .permission-fixed {
-  color: #789588;
-  font-size: 12px;
+  color: #526960;
+  font-size: 0.9rem;
 }
 .member-admin-actions {
   display: flex;
@@ -933,7 +933,7 @@ legend {
   align-items: center;
   gap: 20px;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: 0.9rem;
   padding: 16px 0;
   border-bottom: 1px solid var(--line);
 }
@@ -956,7 +956,7 @@ legend {
   gap: 18px;
   padding: 20px 0;
   border-bottom: 1px solid var(--line);
-  color: #8ca396;
+  color: #526960;
 }
 .credential-row > div {
   flex: 1;
@@ -964,18 +964,18 @@ legend {
 }
 .credential-row strong {
   color: #3a5347;
-  font-size: 14px;
+  font-size: 1rem;
   display: block;
 }
 .credential-row span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.9rem;
   display: block;
   margin-top: 4px;
 }
 .detail-list {
   margin: 20px 0 0;
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 .detail-list > div {
   display: flex;
@@ -1013,8 +1013,8 @@ legend {
   position: absolute;
   top: 12px;
   right: 12px;
-  font-size: 11px;
-  color: #8ca094;
+  font-size: 0.9rem;
+  color: #526960;
   pointer-events: none;
 }
 .modal {
@@ -1044,7 +1044,7 @@ legend {
   margin-bottom: 23px;
 }
 .modal-header h2 {
-  font-size: 19px;
+  font-size: 1.2rem;
 }
 .modal-actions {
   display: flex;
@@ -1054,8 +1054,8 @@ legend {
   padding-top: 8px;
 }
 .modal-description {
-  font-size: 14px;
-  color: #75897b;
+  font-size: 1rem;
+  color: #526960;
   margin-bottom: 22px;
   line-height: 1.8;
 }
@@ -1070,7 +1070,7 @@ legend {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 1rem;
 }
 .weekday-row {
   display: flex;
@@ -1087,7 +1087,7 @@ legend {
   color: #a94359;
   background: #fdf1f3;
   padding: 11px 14px;
-  font-size: 13px;
+  font-size: 0.9rem;
   border-radius: 4px;
 }
 .inline-banner {
@@ -1097,7 +1097,7 @@ legend {
   margin-bottom: 20px;
   padding: 12px 15px;
   background: #fff7e8;
-  font-size: 13px;
+  font-size: 0.9rem;
   border-radius: 4px;
 }
 .inline-banner span {
@@ -1106,12 +1106,12 @@ legend {
 .history-row {
   border-top: 1px solid var(--line);
   padding: 16px 0;
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 .history-row > span {
   color: var(--muted);
   margin-left: 12px;
-  font-size: 11px;
+  font-size: 0.9rem;
 }
 .history-row .muted,
 .history-row p {
@@ -1128,7 +1128,7 @@ legend {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .conflict-versions pre {
   white-space: pre-wrap;
@@ -1145,7 +1145,7 @@ legend {
 }
 .recovery-codes code {
   overflow-wrap: anywhere;
-  font-size: 12px;
+  font-size: 0.9rem;
   padding: 8px;
   background: #f3f7f4;
 }
@@ -1160,7 +1160,7 @@ legend {
   height: auto;
 }
 .qr-view input {
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .toast-message {
   position: fixed;
@@ -1177,7 +1177,7 @@ legend {
   padding: 8px 12px;
   max-width: calc(100% - 32px);
   z-index: 50;
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 .toast-message.success {
   color: var(--green);
@@ -1213,8 +1213,8 @@ legend {
   margin-bottom: 12px;
 }
 .auth-subtitle {
-  color: #8d9b93;
-  font-size: 13px;
+  color: #526960;
+  font-size: 0.9rem;
   margin-bottom: 35px;
 }
 .auth-main .form-error {
@@ -1234,8 +1234,8 @@ legend {
   padding-top: 27px;
 }
 .auth-footer {
-  color: #96a399;
-  font-size: 11px;
+  color: #526960;
+  font-size: 0.9rem;
   text-align: center;
 }
 .auth-loading {
@@ -1271,7 +1271,7 @@ legend {
   border-bottom: 1px solid var(--line);
 }
 .file-picker input {
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 .restore-preview {
   margin-top: 26px;
@@ -1303,7 +1303,7 @@ legend {
     padding: 16px;
   }
   .metric-value {
-    font-size: 25px;
+    font-size: 1.4rem;
   }
   .record-row {
     gap: 16px;
@@ -1313,7 +1313,7 @@ legend {
     gap: 18px;
   }
 }
-@media (max-width: 850px) {
+@media (max-width: 1100px) {
   .sidebar {
     display: none;
   }
@@ -1347,8 +1347,8 @@ legend {
     background: none;
     border: 0;
     padding: 3px;
-    color: #91a197;
-    font-size: 10px;
+    color: #526960;
+    font-size: 0.9rem;
     min-width: 0;
   }
   .mobile-navigation button.active {
@@ -1361,13 +1361,13 @@ legend {
     padding-top: 25px;
   }
   .topbar-date {
-    font-size: 11px;
+    font-size: 0.9rem;
   }
   .member-switch {
     margin-bottom: 24px;
   }
   h1 {
-    font-size: 23px;
+    font-size: 1.4rem;
   }
   .overview-columns {
     gap: 22px;
@@ -1375,7 +1375,7 @@ legend {
 }
 @media (max-width: 600px) {
   body {
-    font-size: 14px;
+    font-size: 1rem;
   }
   .main-content {
     padding-inline: 18px;
@@ -1397,13 +1397,13 @@ legend {
     flex-wrap: nowrap;
   }
   h1 {
-    font-size: 22px;
+    font-size: 1.4rem;
   }
   h2 {
-    font-size: 17px;
+    font-size: 1.2rem;
   }
   .section-heading > .button {
-    font-size: 12px;
+    font-size: 0.9rem;
     padding: 10px 13px;
   }
   .metric-grid {
@@ -1415,11 +1415,11 @@ legend {
     padding: 15px;
   }
   .metric-value {
-    font-size: 27px;
+    font-size: 1.8rem;
     margin: 15px 0 12px;
   }
   .metric-divider {
-    font-size: 21px;
+    font-size: 1.4rem;
     margin-inline: 4px;
   }
   .metric-bottom {
@@ -1457,7 +1457,7 @@ legend {
     max-width: none;
   }
   .record-reading strong {
-    font-size: 18px;
+    font-size: 1.2rem;
   }
   .toolbar {
     gap: 17px;
@@ -1483,10 +1483,10 @@ legend {
   }
   .dose-time {
     width: 43px;
-    font-size: 13px;
+    font-size: 0.9rem;
   }
   .dose-amount strong {
-    font-size: 20px;
+    font-size: 1.2rem;
   }
   .medicine-symbol {
     display: none;
@@ -1504,7 +1504,7 @@ legend {
   input,
   select,
   textarea {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .modal-actions > .button {
     flex: 1;
@@ -1534,5 +1534,487 @@ legend {
   }
   * {
     scroll-behavior: auto !important;
+  }
+}
+/* Shared readable sizing applies to every page, including account and recovery screens. */
+:root {
+  font-size: 125%;
+  line-height: 1.6;
+  color: #203d37;
+  background: #f3f6f1;
+  --green: #166556;
+  --muted: #526960;
+  --line: #b6c6bd;
+}
+body {
+  font-size: 1rem;
+}
+h1 {
+  font-size: 1.4rem;
+}
+h2 {
+  font-size: 1.2rem;
+}
+h3 {
+  font-size: 1.1rem;
+}
+p,
+strong,
+span,
+label,
+button,
+a,
+dd,
+dt {
+  overflow-wrap: anywhere;
+}
+button,
+input,
+select,
+textarea,
+summary {
+  min-height: 48px;
+}
+.button {
+  min-height: 56px;
+  font-size: 1rem;
+}
+.text-button {
+  min-height: 48px;
+  padding: 0.4rem;
+  font-size: 0.9rem;
+}
+.icon-button {
+  min-width: 48px;
+  width: auto;
+  height: auto;
+  min-height: 48px;
+}
+input,
+select,
+textarea {
+  font-size: 1rem;
+  border-color: #789486;
+}
+input[type='checkbox'] {
+  min-height: 24px;
+  min-width: 24px;
+  width: 24px;
+  height: 24px;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #975810;
+  outline-offset: 3px;
+}
+.muted,
+.section-subtitle,
+.page-footnote,
+.eyebrow,
+.app-footer,
+.record-meta,
+.record-date span,
+.metric-bottom,
+.dose-info p,
+.medicine-content p,
+.sidebar-user span,
+.topbar-date,
+.member-switch-label {
+  color: #526960;
+}
+.full-width {
+  width: 100%;
+}
+.text-size-control {
+  margin: 1rem 0;
+}
+.text-size-control .segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.text-size-control .segmented button {
+  flex: 1;
+  min-width: 70px;
+}
+.overview-readable-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+.daily-section {
+  min-width: 0;
+  margin-top: 1.2rem;
+}
+.daily-section .section-heading {
+  margin-bottom: 0.6rem;
+}
+.readable-card {
+  margin: 0.8rem 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: white;
+}
+.readable-card p + p {
+  margin-top: 0.6rem;
+}
+.medicine-card {
+  border-left: 5px solid var(--green);
+}
+.dose-period {
+  color: #285346;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+.dose-readable {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.large-reading {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.large-reading span {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+.record-entry {
+  margin-top: 0.8rem;
+}
+.latest-measurement h3 {
+  margin-top: 0.8rem;
+}
+.readable-fields {
+  margin: 0.8rem 0;
+}
+.readable-fields > div {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.readable-fields dt {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.readable-fields dd {
+  margin: 0.25rem 0 0;
+  white-space: pre-wrap;
+}
+.account-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 1.2rem;
+}
+.record-owner {
+  background: #e5eee6;
+  padding: 0.7rem;
+  border-radius: 10px;
+}
+.member-switch {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.member-switch select {
+  font-size: 1.1rem;
+  font-weight: 650;
+  max-width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+.member-switch-label {
+  width: 100%;
+  font-size: 0.9rem;
+}
+.inline-banner {
+  align-items: start;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+}
+.saved-result {
+  background: #e4efe6;
+}
+.modal {
+  max-height: calc(100dvh - 32px);
+}
+.modal-header h2 {
+  min-width: 0;
+}
+.modal-header {
+  align-items: start;
+}
+.modal-actions {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.modal-actions button {
+  white-space: normal;
+}
+.row-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.form-stack,
+.form-grid,
+.form-grid-three {
+  gap: 12px;
+}
+.schedule-editor {
+  min-width: 0;
+}
+.weekday-row {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.weekday {
+  min-width: 48px;
+  min-height: 48px;
+}
+.weekday span {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 8px;
+}
+.dose-time {
+  width: auto;
+  min-width: 0;
+}
+.dose-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.dose-amount strong {
+  font-size: 1.4rem;
+}
+.dose-amount span {
+  font-size: 1rem;
+}
+.date-filter,
+.day-picker {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.date-filter input,
+.day-picker input {
+  width: auto;
+  max-width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+.segmented {
+  flex-wrap: wrap;
+}
+.segmented button {
+  white-space: normal;
+}
+.record-values {
+  flex-wrap: wrap;
+}
+.record-reading strong {
+  font-size: 1.4rem;
+}
+.record-reading > span,
+.reading-slash {
+  font-size: 0.9rem;
+}
+.trend-data {
+  margin-top: 1rem;
+}
+.trend-data summary {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.trend-data li {
+  margin: 0.5rem 0;
+}
+.member-name,
+.member-info,
+.device-info,
+.medicine-content {
+  min-width: 0;
+}
+@media (min-width: 1101px) {
+  .sidebar {
+    width: 280px;
+  }
+  .main-layout {
+    margin-left: 280px;
+  }
+}
+@media (max-width: 1100px) {
+  .overview-readable-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mobile-navigation {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    height: auto;
+    min-height: 80px;
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    gap: 4px;
+  }
+  .mobile-navigation button {
+    min-height: 64px;
+    font-size: 0.9rem;
+    color: #526960;
+    padding: 4px 0;
+  }
+  .mobile-navigation button.active {
+    color: #105044;
+    background: #e2eee5;
+    border-radius: 12px;
+  }
+  .main-content {
+    padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+  }
+}
+@media (max-width: 700px) {
+  .main-content {
+    padding: 20px 16px calc(7rem + env(safe-area-inset-bottom));
+  }
+  .topbar {
+    padding: 12px 16px;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .topbar-right {
+    min-width: 0;
+  }
+  .section-heading {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .section-heading .button {
+    width: 100%;
+  }
+  .form-grid,
+  .form-grid-three {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .record-row,
+  .dose-row,
+  .medicine-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 20px 16px;
+  }
+  .record-date,
+  .record-meta,
+  .dose-info,
+  .dose-time,
+  .dose-amount {
+    width: auto;
+    max-width: 100%;
+  }
+  .dose-time {
+    font-size: 1rem;
+  }
+  .dose-time span {
+    display: inline;
+    margin-left: 0.6rem;
+    font-size: 0.9rem;
+  }
+  .record-meta {
+    flex: initial;
+  }
+  .record-date {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .record-values {
+    gap: 20px;
+  }
+  .member-row {
+    flex-wrap: wrap;
+  }
+  .member-admin-actions {
+    padding-left: 0;
+    flex-wrap: wrap;
+  }
+  .inline-form label {
+    min-width: 0;
+    width: 100%;
+  }
+  .invitation-row {
+    flex-wrap: wrap;
+  }
+  .modal-fullscreen {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
+  .modal-fullscreen .modal-content {
+    padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+  }
+  .modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .modal-actions > .button {
+    flex: auto;
+  }
+  .conflict-versions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .modal {
+    overflow-x: clip;
+  }
+  .modal-content {
+    padding: 20px 16px;
+  }
+  .app-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+.selected-member-name {
+  flex: 1 1 140px;
+  min-width: 0;
+  font-size: 1.1rem;
+}
+.member-options {
+  display: grid;
+  gap: 12px;
+}
+.account-shortcuts {
+  margin-bottom: 1.5rem;
+}
+.toolbar > div,
+.record-values,
+.record-reading {
+  min-width: 0;
+  max-width: 100%;
+}
+@media (max-width: 700px) {
+  .date-filter {
+    width: 100%;
+  }
+  .date-filter input {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .plan-summary,
+  .credential-row {
+    flex-wrap: wrap;
+  }
+  .credential-row > div {
+    flex-basis: 100%;
+  }
+  .plan-summary > div {
+    min-width: 0;
+  }
+  .section-heading.compact {
+    flex-wrap: wrap;
   }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { RouterView, useRoute, useRouter } from 'vue-router';
 import {
   Activity,
@@ -16,32 +16,46 @@ import {
   Pill,
   RefreshCw,
   Settings,
-  Users,
   X,
 } from 'lucide-vue-next';
 import { initialize, state, syncNow, resolveConflict, logoutLocal } from './sync';
 import { api, clock, errorMessage, notice, notify } from './state/client';
 import AuthPage from './pages/AuthPage.vue';
 import ModalDialog from './components/ModalDialog.vue';
+import TextSizeControl from './components/TextSizeControl.vue';
+import RecordDetails from './components/RecordDetails.vue';
+import { savedMessage } from './state/client';
 
 const loading = ref(true);
+const mainContent = ref<HTMLElement>();
 const router = useRouter();
 const route = useRoute();
+watch(
+  () => route.fullPath,
+  async () => {
+    await nextTick();
+    mainContent.value?.focus({ preventScroll: true });
+  },
+);
 const page = computed(() => String(route.name ?? 'overview'));
 const selectedMember = ref('');
+const memberPickerOpen = ref(false);
 const conflictOpen = ref(false);
 const logoutOpen = ref(false);
 const actionBusy = ref(false);
 const navigation = [
-  { id: 'overview', label: '健康概览', short: '概览', icon: LayoutDashboard },
+  { id: 'overview', label: '首页', short: '首页', icon: LayoutDashboard },
   { id: 'health', label: '健康记录', short: '记录', icon: HeartPulse },
   { id: 'medication', label: '用药清单', short: '用药', icon: Pill },
-  { id: 'family', label: '家庭成员', short: '家庭', icon: Users },
   { id: 'settings', label: '我的账户', short: '我的', icon: Settings },
 ];
 const members = computed(() => state.snapshot?.members.filter((member) => member.active) ?? []);
 const currentLabel = computed(() =>
-  page.value === 'backup' ? '数据与备份' : navigation.find((item) => item.id === page.value)?.label,
+  page.value === 'family'
+    ? '家庭成员'
+    : page.value === 'backup'
+      ? '数据与备份'
+      : navigation.find((item) => item.id === page.value)?.label,
 );
 const beijingHeading = computed(() =>
   new Intl.DateTimeFormat('zh-CN', {
@@ -57,6 +71,7 @@ function navigate(value: string) {
 watch(
   () => state.session?.user.id,
   (id) => {
+    savedMessage.value = '';
     if (id) selectedMember.value = id;
   },
 );
@@ -126,6 +141,7 @@ onMounted(async () => {
           v-for="item in navigation"
           :key="item.id"
           :class="{ active: page === item.id }"
+          :aria-current="page === item.id ? 'page' : undefined"
           @click="navigate(item.id)"
         >
           <component :is="item.icon" :size="20" /><span>{{ item.label }}</span
@@ -194,25 +210,50 @@ onMounted(async () => {
           </button>
         </div>
       </header>
-      <main class="main-content">
+      <main ref="mainContent" class="main-content" tabindex="-1">
         <div v-if="['overview', 'health', 'medication'].includes(page)" class="member-switch">
+          <span class="member-context">当前查看</span>
           <span class="avatar small">{{
             members.find((member) => member.id === selectedMember)?.nickname.slice(0, 1) ?? '我'
           }}</span
-          ><select v-model="selectedMember" aria-label="选择家庭成员">
-            <option v-for="member in members" :key="member.id" :value="member.id">
-              {{ member.nickname }}{{ member.id === state.session.user.id ? '（我）' : '' }}
-            </option></select
-          ><span class="member-switch-label">家庭健康档案</span>
+          ><strong class="selected-member-name"
+            >{{ members.find((member) => member.id === selectedMember)?.nickname
+            }}{{ selectedMember === state.session?.user.id ? '（我）' : '' }}</strong
+          ><button
+            class="button secondary"
+            aria-label="切换家庭成员"
+            @click="memberPickerOpen = true"
+          >
+            切换</button
+          ><span class="member-switch-label">这里显示当前成员的健康资料</span>
+        </div>
+        <div v-if="!state.online || state.pendingCount" class="inline-banner" role="status">
+          <span>{{
+            !state.online
+              ? '当前没有网络，显示本机保存的资料。新记录会在联网后自动同步。'
+              : `${state.pendingCount} 条记录已保存在本机，正在等待同步给家人。`
+          }}</span>
+        </div>
+        <div v-if="savedMessage" class="inline-banner saved-result" role="status">
+          <span>{{ savedMessage }}</span
+          ><button class="text-button" @click="savedMessage = ''">知道了</button>
         </div>
         <div v-if="state.error" class="inline-banner warning">
           <AlertCircle :size="17" /><span>{{ state.error }}</span
           ><button class="text-button" @click="sync">重试</button>
         </div>
+        <section v-if="page === 'settings'" class="account-shortcuts">
+          <TextSizeControl /><button
+            class="button secondary full-width"
+            @click="navigate('family')"
+          >
+            家庭成员
+          </button>
+        </section>
         <RouterView v-slot="{ Component }">
           <component :is="Component" :owner-id="selectedMember" @navigate="navigate" />
         </RouterView>
-        <div v-if="page === 'settings'" class="mobile-account-actions">
+        <div v-if="page === 'settings'" class="account-actions">
           <button class="button secondary" @click="navigate('backup')">
             <DatabaseBackup :size="18" />数据与备份<ArrowRight :size="16" /></button
           ><button class="button secondary" @click="logoutOpen = true">
@@ -228,13 +269,37 @@ onMounted(async () => {
       <button
         v-for="item in navigation"
         :key="item.id"
-        :class="{ active: page === item.id || (item.id === 'settings' && page === 'backup') }"
+        :class="{
+          active:
+            page === item.id || (item.id === 'settings' && ['backup', 'family'].includes(page)),
+        }"
+        :aria-current="
+          page === item.id || (item.id === 'settings' && ['family', 'backup'].includes(page))
+            ? 'page'
+            : undefined
+        "
         @click="navigate(item.id)"
       >
         <component :is="item.icon" :size="21" /><span>{{ item.short }}</span>
       </button>
     </nav>
   </div>
+  <ModalDialog v-if="memberPickerOpen" title="选择家庭成员" @close="memberPickerOpen = false"
+    ><div class="member-options">
+      <button
+        v-for="member in members"
+        :key="member.id"
+        class="button secondary full-width"
+        :aria-pressed="member.id === selectedMember"
+        @click="
+          selectedMember = member.id;
+          memberPickerOpen = false;
+        "
+      >
+        {{ member.nickname }}{{ member.id === state.session?.user.id ? '（我）' : '' }}
+      </button>
+    </div></ModalDialog
+  >
   <Transition name="toast"
     ><div v-if="notice.message" :class="['toast-message', notice.kind]" role="status">
       <AlertCircle v-if="notice.kind === 'error'" :size="18" /><Check v-else :size="18" /><span>{{
@@ -269,26 +334,18 @@ onMounted(async () => {
       <h3>{{ conflict.resource === 'health' ? '健康记录' : '用药计划' }}</h3>
       <p class="form-error">{{ conflict.error }}</p>
       <div class="conflict-versions">
-        <div>
-          <strong>本机修改</strong>
-          <pre>{{ JSON.stringify(conflict.local, null, 2) }}</pre>
-        </div>
-        <div>
-          <strong>服务器版本</strong>
-          <pre>{{
-            conflict.server ? JSON.stringify(conflict.server, null, 2) : '暂无服务器记录'
-          }}</pre>
-        </div>
+        <div><strong>这台手机的记录</strong><RecordDetails :record="conflict.local" /></div>
+        <div><strong>家人已保存的记录</strong><RecordDetails :record="conflict.server" /></div>
       </div>
       <div class="modal-actions">
         <button class="button secondary" @click="resolve(conflict.operationId, 'server')">
-          采用服务器版本</button
+          采用家人已保存的记录</button
         ><button
           v-if="conflict.kind === 'version'"
           class="button primary"
           @click="resolve(conflict.operationId, 'local')"
         >
-          保留本机修改并重试
+          保留这台手机的修改并重试
         </button>
       </div>
     </article>

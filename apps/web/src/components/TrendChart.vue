@@ -4,6 +4,8 @@ import * as echarts from 'echarts/core';
 import { LineChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { textSize } from '../state/display';
+import { displayTime } from '../state/client';
 import type { HealthRecord } from '@simcare/shared';
 echarts.use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
 const props = withDefaults(
@@ -41,12 +43,18 @@ function render() {
             color: '#19766b',
           },
         ];
+  const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.9;
   chart.setOption(
     {
-      animationDuration: 350,
-      grid: { left: 46, right: 18, top: 20, bottom: 50 },
-      tooltip: { trigger: 'axis', confine: true },
-      legend: { bottom: 0, icon: 'circle', itemWidth: 8, textStyle: { color: '#64726c' } },
+      animationDuration: 0,
+      grid: { left: 8, right: 12, top: 24, bottom: 70, containLabel: true },
+      tooltip: { trigger: 'axis', confine: true, textStyle: { fontSize } },
+      legend: {
+        bottom: 0,
+        icon: 'circle',
+        itemWidth: 8,
+        textStyle: { color: '#526960', fontSize },
+      },
       xAxis: {
         type: 'category',
         data: sorted.value.map(
@@ -55,7 +63,8 @@ function render() {
         axisLine: { lineStyle: { color: '#dde4df' } },
         axisTick: { show: false },
         axisLabel: {
-          color: '#738078',
+          color: '#526960',
+          fontSize,
           hideOverlap: true,
           formatter: (value: string) => value.split(' ')[0],
         },
@@ -64,21 +73,22 @@ function render() {
         type: 'value',
         scale: true,
         splitNumber: 4,
-        axisLabel: { color: '#738078' },
+        axisLabel: { color: '#526960', fontSize },
         splitLine: { lineStyle: { color: '#ecf0ed', type: 'dashed' } },
       },
-      series: fields.map((field) => ({
+      series: fields.map((field, index) => ({
         name: field.name,
         type: 'line',
         smooth: false,
-        symbolSize: 7,
+        symbolSize: 9,
+        symbol: index === 0 ? 'circle' : 'diamond',
         connectNulls: false,
         data: sorted.value.map(
           (record) =>
             record[field.key as 'systolic' | 'diastolic' | 'pulse' | 'oxygen' | 'temperature'],
         ),
         itemStyle: { color: field.color },
-        lineStyle: { width: 2 },
+        lineStyle: { width: 3, type: index === 0 ? 'solid' : 'dashed' },
         emphasis: { focus: 'series' },
       })),
     },
@@ -88,11 +98,14 @@ function render() {
 onMounted(() => {
   if (!element.value) return;
   chart = echarts.init(element.value);
-  observer = new ResizeObserver(() => chart?.resize());
+  observer = new ResizeObserver(() => {
+    chart?.resize();
+    render();
+  });
   observer.observe(element.value);
   render();
 });
-watch(() => [props.records, props.metric], render, { deep: true });
+watch(() => [props.records, props.metric, textSize.value], render, { deep: true });
 onBeforeUnmount(() => {
   observer?.disconnect();
   chart?.dispose();
@@ -108,4 +121,29 @@ onBeforeUnmount(() => {
     />
     <div v-if="!hasData" class="chart-empty">暂无该指标的测量数据</div>
   </div>
+  <details class="trend-data">
+    <summary>查看同范围测量数据</summary>
+    <p>
+      {{
+        metric === 'pressure'
+          ? '血压单位：mmHg；实线为高压，虚线为低压。'
+          : metric === 'pulse'
+            ? '心率单位：次/分'
+            : metric === 'oxygen'
+              ? '血氧单位：%'
+              : '体温单位：℃'
+      }}
+    </p>
+    <ul>
+      <li v-for="record in sorted" :key="record.id">
+        {{ displayTime(record.measuredAt) }}：{{
+          metric === 'pressure'
+            ? record.systolic === null
+              ? '未测量'
+              : record.systolic + ' / ' + record.diastolic
+            : (record[metric] ?? '未测量')
+        }}
+      </li>
+    </ul>
+  </details>
 </template>

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { Activity, ArrowRight, Droplets, Heart, Pill, Plus, Thermometer } from 'lucide-vue-next';
+import { Plus, Pill } from 'lucide-vue-next';
 import { canCreateHealth, canViewHealth, todayMedication, labels } from '@simcare/shared';
 import { state } from '../sync';
 import { displayTime, today } from '../state/client';
-import TrendChart from '../components/TrendChart.vue';
 import HealthForm from '../components/HealthForm.vue';
 const props = defineProps<{ ownerId: string }>();
 const emit = defineEmits<{ navigate: [page: string] }>();
@@ -15,18 +14,13 @@ const visible = computed(
     !!state.session &&
     canViewHealth(state.session.user, props.ownerId, state.snapshot?.grants ?? []),
 );
-const records = computed(() =>
+const latest = computed(() =>
   visible.value
     ? (state.snapshot?.healthRecords ?? [])
         .filter((record) => record.ownerId === props.ownerId && !record.deletedAt)
-        .sort((left, right) => right.measuredAt.localeCompare(left.measuredAt))
-    : [],
+        .sort((a, b) => b.measuredAt.localeCompare(a.measuredAt))[0]
+    : undefined,
 );
-const recent = computed(() => records.value.slice(0, 3));
-const bloodPressure = computed(() => records.value.find((record) => record.systolic !== null));
-const pulse = computed(() => records.value.find((record) => record.pulse !== null));
-const oxygen = computed(() => records.value.find((record) => record.oxygen !== null));
-const temperature = computed(() => records.value.find((record) => record.temperature !== null));
 const doses = computed(() =>
   todayMedication(
     (state.snapshot?.medications ?? []).filter((item) => item.ownerId === props.ownerId),
@@ -46,116 +40,79 @@ const canCreate = computed(() =>
 );
 </script>
 <template>
-  <section class="page-section">
-    <div class="section-heading">
-      <div>
-        <p class="eyebrow">家庭健康档案</p>
-        <h1>
-          {{
-            ownerId === state.session?.user.id
-              ? '我的健康概览'
-              : `${owner?.nickname ?? '成员'}的健康概览`
-          }}
-        </h1>
-        <p class="section-subtitle">最近测量与今日用药</p>
-      </div>
-      <button v-if="canCreate" class="button primary" @click="showForm = true">
-        <Plus :size="18" />新增健康记录
-      </button>
-    </div>
-    <div class="metric-grid">
-      <article class="metric-card">
-        <div class="metric-heading"><span>血压</span><Activity :size="19" /></div>
-        <div class="metric-value">
-          {{ bloodPressure?.systolic ?? '—' }}<span class="metric-divider">/</span
-          >{{ bloodPressure?.diastolic ?? '—' }}
-        </div>
-        <div class="metric-bottom">
-          <span>mmHg</span><time>{{ displayTime(bloodPressure?.measuredAt) }}</time>
-        </div>
-      </article>
-      <article class="metric-card rose">
-        <div class="metric-heading"><span>心率</span><Heart :size="19" /></div>
-        <div class="metric-value">{{ pulse?.pulse ?? '—' }}</div>
-        <div class="metric-bottom">
-          <span>bpm</span><time>{{ displayTime(pulse?.measuredAt) }}</time>
-        </div>
-      </article>
-      <article class="metric-card blue">
-        <div class="metric-heading"><span>血氧</span><Droplets :size="19" /></div>
-        <div class="metric-value">{{ oxygen?.oxygen ?? '—' }}</div>
-        <div class="metric-bottom">
-          <span>%</span><time>{{ displayTime(oxygen?.measuredAt) }}</time>
-        </div>
-      </article>
-      <article class="metric-card gold">
-        <div class="metric-heading"><span>体温</span><Thermometer :size="19" /></div>
-        <div class="metric-value">{{ temperature?.temperature ?? '—' }}</div>
-        <div class="metric-bottom">
-          <span>°C</span><time>{{ displayTime(temperature?.measuredAt) }}</time>
-        </div>
-      </article>
-    </div>
-    <div class="overview-columns">
-      <section class="overview-trend">
-        <div class="section-heading compact">
-          <div>
-            <h2>血压趋势</h2>
-            <p class="muted">最近 30 条测量</p>
-          </div>
-          <button class="text-button" @click="emit('navigate', 'health')">
-            全部记录<ArrowRight :size="16" />
-          </button>
-        </div>
-        <TrendChart :records="records.slice(0, 30)" />
-      </section>
-      <section class="overview-medications">
-        <div class="section-heading compact">
-          <h2>今日用药</h2>
-          <button class="text-button" @click="emit('navigate', 'medication')">
-            <ArrowRight :size="17" /><span class="sr-only">全部用药</span>
-          </button>
-        </div>
-        <div v-if="!doses.length" class="small-empty">
+  <section class="page-section readable-overview">
+    <h1>
+      {{
+        ownerId === state.session?.user.id
+          ? '我的健康概览'
+          : `${owner?.nickname ?? '成员'}的健康概览`
+      }}
+    </h1>
+    <div class="overview-readable-grid">
+      <section class="daily-section">
+        <div class="section-heading"><h2>今天的用药</h2></div>
+        <p class="muted">{{ today }} · {{ doses.length }} 项计划安排</p>
+        <div v-if="!doses.length" class="readable-card small-empty">
           <Pill :size="28" />
           <p>今天暂无用药安排</p>
         </div>
-        <div v-for="dose in doses.slice(0, 4)" :key="dose.schedule.id" class="mini-dose">
-          <span class="mini-dose-time">{{
-            dose.schedule.time || labels.period[dose.schedule.period]
-          }}</span>
-          <div>
-            <strong>{{ dose.medication.name }}</strong
-            ><span
-              >{{ dose.schedule.dose }} {{ dose.schedule.unit }} ·
-              {{ labels.meal[dose.schedule.meal] }}</span
-            >
-          </div>
+        <article
+          v-for="dose in doses.slice(0, 2)"
+          :key="`${dose.medication.id}-${dose.schedule.id}`"
+          class="readable-card medicine-card"
+        >
+          <p class="dose-period">
+            {{ dose.schedule.time || labels.period[dose.schedule.period] }} ·
+            {{ labels.meal[dose.schedule.meal] }}
+          </p>
+          <h3>{{ dose.medication.name }}</h3>
+          <p class="dose-readable">每次 {{ dose.schedule.dose }} {{ dose.schedule.unit }}</p>
+          <p v-if="dose.medication.specification" class="muted">
+            {{ dose.medication.specification }}
+          </p>
+        </article>
+        <button class="button primary full-width" @click="emit('navigate', 'medication')">
+          查看今天全部用药安排
+        </button>
+        <p class="page-footnote">这里只显示计划，不代表已经服药。</p>
+      </section>
+      <section class="daily-section">
+        <div class="section-heading"><h2>最近一次测量</h2></div>
+        <article v-if="latest" class="readable-card latest-measurement">
+          <p class="muted">{{ displayTime(latest.measuredAt) }} · 北京时间</p>
+          <template v-if="latest.systolic !== null"
+            ><h3>血压</h3>
+            <p class="large-reading">
+              {{ latest.systolic }} / {{ latest.diastolic }} <span>mmHg</span>
+            </p>
+            <p>高压 {{ latest.systolic }} · 低压 {{ latest.diastolic }}</p></template
+          >
+          <p v-if="latest.pulse !== null">
+            心率 <strong>{{ latest.pulse }}</strong> 次/分
+          </p>
+          <p v-if="latest.oxygen !== null">
+            血氧 <strong>{{ latest.oxygen }}</strong> %
+          </p>
+          <p v-if="latest.temperature !== null">
+            体温 <strong>{{ latest.temperature }}</strong> ℃
+          </p>
+          <p v-if="latest.note">{{ latest.note }}</p>
+        </article>
+        <div v-else class="readable-card">
+          <p>{{ visible ? '还没有测量记录' : '该成员尚未授权查看健康记录' }}</p>
         </div>
-        <p class="page-footnote">{{ doses.length }} 次计划安排</p>
+        <button class="button secondary full-width" @click="emit('navigate', 'health')">
+          查看以前的记录
+        </button>
+        <button
+          v-if="canCreate"
+          class="button secondary full-width record-entry"
+          @click="showForm = true"
+        >
+          <Plus :size="20" />为{{ owner?.nickname }}记录测量
+        </button>
       </section>
     </div>
-    <section class="recent-section">
-      <div class="section-heading compact">
-        <h2>最近记录</h2>
-        <button class="text-button" @click="emit('navigate', 'health')">
-          查看全部<ArrowRight :size="16" />
-        </button>
-      </div>
-      <div v-if="!recent.length" class="small-empty horizontal">
-        <Activity :size="24" />
-        <p>{{ visible ? '还没有健康记录' : '此成员未授权查看健康记录' }}</p>
-      </div>
-      <div v-for="record in recent" :key="record.id" class="recent-row">
-        <time>{{ displayTime(record.measuredAt) }}</time
-        ><strong v-if="record.systolic !== null"
-          >{{ record.systolic }} / {{ record.diastolic }} <small>mmHg</small></strong
-        ><span v-if="record.pulse !== null">{{ record.pulse }} <small>bpm</small></span
-        ><span v-if="record.oxygen !== null">{{ record.oxygen }} <small>%</small></span
-        ><span v-if="record.temperature !== null">{{ record.temperature }} <small>°C</small></span>
-        <p>{{ record.note || '—' }}</p>
-      </div>
-    </section>
     <HealthForm
       v-if="showForm"
       :owner-id="ownerId"

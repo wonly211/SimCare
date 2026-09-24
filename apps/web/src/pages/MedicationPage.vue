@@ -6,12 +6,10 @@ import {
   ChevronRight,
   Clock3,
   Moon,
-  Pencil,
   Pill,
   Plus,
   Sun,
   Sunrise,
-  Trash2,
 } from 'lucide-vue-next';
 import {
   beijingDate,
@@ -23,6 +21,7 @@ import {
 import { state, deleteRecord } from '../sync';
 import MedicationForm from '../components/MedicationForm.vue';
 import ModalDialog from '../components/ModalDialog.vue';
+import RecordDetails from '../components/RecordDetails.vue';
 import { errorMessage, notify, today } from '../state/client';
 const props = defineProps<{ ownerId: string }>();
 const tab = ref<'today' | 'list'>('today');
@@ -33,6 +32,7 @@ watch(today, (next, previous) => {
 const status = ref('active');
 const formOpen = ref(false);
 const editing = ref<Medication>();
+const detail = ref<Medication>();
 const removing = ref<Medication>();
 const busy = ref(false);
 const medications = computed(() =>
@@ -127,7 +127,9 @@ async function remove() {
           @click="changeDate(1)"
         >
           <ChevronRight :size="18" /></button
-        ><button class="text-button" @click="day = beijingDate()">今天</button>
+        ><button class="text-button" @click="day = beijingDate()">
+          {{ day === today ? '今天' : '回到今天' }}
+        </button>
       </div>
       <select v-else v-model="status" aria-label="用药状态">
         <option value="active">使用中</option>
@@ -146,7 +148,7 @@ async function remove() {
             {{ new Set(doses.map((item) => item.medication.id)).size }} 种药品</span
           >
         </div>
-        <span class="badge neutral">计划</span>
+        <span class="badge neutral">计划，不代表已服药</span>
       </div>
       <div v-if="!doses.length" class="empty-state">
         <Pill :size="36" />
@@ -183,18 +185,10 @@ async function remove() {
               <p v-if="dose.medication.note" class="dose-note">{{ dose.medication.note }}</p>
             </div>
             <div class="dose-amount">
-              <strong>{{ dose.schedule.dose }}</strong
+              <span>每次</span><strong>{{ dose.schedule.dose }}</strong
               ><span>{{ dose.schedule.unit }}</span>
             </div>
-            <button
-              v-if="canEdit"
-              class="icon-button"
-              title="编辑用药计划"
-              aria-label="编辑用药计划"
-              @click="openForm(dose.medication)"
-            >
-              <Pencil :size="17" />
-            </button>
+            <button class="button secondary" @click="detail = dose.medication">查看用药详情</button>
           </article>
         </section>
       </div>
@@ -234,25 +228,32 @@ async function remove() {
               }}
             </p>
           </div>
-          <div v-if="canEdit" class="row-actions">
-            <button
-              class="icon-button"
-              title="编辑用药计划"
-              aria-label="编辑用药计划"
-              @click="openForm(medication)"
-            >
-              <Pencil :size="17" /></button
-            ><button
-              class="icon-button danger"
-              title="移除用药计划"
-              aria-label="移除用药计划"
-              @click="removing = medication"
-            >
-              <Trash2 :size="17" />
-            </button>
-          </div>
-        </article></div
-    ></template>
+          <button class="button secondary" @click="detail = medication">查看用药详情</button>
+        </article>
+      </div></template
+    >
+    <ModalDialog v-if="detail" :title="detail.name" @close="detail = undefined"
+      ><RecordDetails :record="detail" />
+      <div v-if="canEdit" class="modal-actions">
+        <button
+          class="button secondary"
+          @click="
+            openForm(detail);
+            detail = undefined;
+          "
+        >
+          修改计划</button
+        ><button
+          class="button danger-button"
+          @click="
+            removing = detail;
+            detail = undefined;
+          "
+        >
+          移除用药计划
+        </button>
+      </div></ModalDialog
+    >
     <MedicationForm
       v-if="formOpen"
       :medication="editing"

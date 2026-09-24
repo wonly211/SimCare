@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { Check, LoaderCircle, Plus, Trash2 } from 'lucide-vue-next';
 import {
   beijingDate,
@@ -12,7 +12,7 @@ import {
 } from '@simcare/shared';
 import ModalDialog from './ModalDialog.vue';
 import { saveMedication } from '../sync';
-import { errorMessage, notify } from '../state/client';
+import { errorMessage, notify, savedMessage } from '../state/client';
 const props = defineProps<{ medication?: Medication; ownerId: string; members: Member[] }>();
 const emit = defineEmits<{ close: []; saved: [] }>();
 function newSchedule(): MedicationSchedule {
@@ -50,6 +50,12 @@ const weekdays = [
   { value: 6, label: '六' },
   { value: 0, label: '日' },
 ];
+const memberName = computed(
+  () => props.members.find((member) => member.id === input.ownerId)?.nickname ?? '当前成员',
+);
+const initial = JSON.stringify(input);
+const dirty = computed(() => JSON.stringify(input) !== initial);
+const modal = ref<InstanceType<typeof ModalDialog>>();
 const saving = ref(false);
 const error = ref('');
 async function submit() {
@@ -70,6 +76,7 @@ async function submit() {
   saving.value = true;
   try {
     await saveMedication(result.data, props.medication?.id, props.medication?.version);
+    savedMessage.value = '用药计划已保存在这台设备，联网后会自动同步。';
     notify('用药计划已保存到本机');
     emit('saved');
     emit('close');
@@ -81,16 +88,21 @@ async function submit() {
 }
 </script>
 <template>
-  <ModalDialog :title="medication ? '编辑用药计划' : '添加用药计划'" wide @close="emit('close')">
+  <ModalDialog
+    ref="modal"
+    :title="medication ? '编辑用药计划' : '添加用药计划'"
+    wide
+    fullscreen
+    :dirty="dirty"
+    :busy="saving"
+    @close="emit('close')"
+  >
     <form class="form-stack" @submit.prevent="submit">
       <div class="form-grid">
+        <p class="record-owner">
+          记录归属：<strong>{{ memberName }}</strong>
+        </p>
         <label
-          >家庭成员<select v-model="input.ownerId" :disabled="!!medication">
-            <option v-for="member in members" :key="member.id" :value="member.id">
-              {{ member.nickname }}
-            </option>
-          </select></label
-        ><label
           >状态<select v-model="input.status">
             <option v-for="(text, value) in labels.status" :key="value" :value="value">
               {{ text }}
@@ -217,7 +229,7 @@ async function submit() {
       ><label>备注<textarea v-model="input.note" rows="2" maxlength="2000" /></label>
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
       <footer class="modal-actions">
-        <button type="button" class="button secondary" @click="emit('close')">取消</button
+        <button type="button" class="button secondary" @click="modal?.close()">取消</button
         ><button type="submit" class="button primary" :disabled="saving">
           <LoaderCircle v-if="saving" class="spin" :size="17" /><Check v-else :size="17" />保存计划
         </button>
