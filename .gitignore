@@ -41,3 +41,19 @@ Thumbs.db
 # Temporary files
 .tmp/
 tmp/
+
+# Workspace documentation and design artifacts must never be published
+/docs/
+/design/
+/designs/
+/prototypes/
+/mockups/
+/wireframes/
+
+# Local collaboration material is never part of the engineering repository
+AGENTS.md
+AGENTS.override.md
+worker/API.md
+.agents/
+.codex/
+.runtime/
